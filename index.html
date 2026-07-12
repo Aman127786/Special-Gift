@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Romantic Birthday Journey</title>
+    <!-- Romantic Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- GLOBAL STYLE & ROMANTIC BACKGROUND --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #2c001e 0%, #0d001a 100%);
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        /* Floating Hearts Canvas Background */
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* --- STAGE CONFIGURATIONS --- */
+        .stage {
+            position: absolute;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            z-index: 10;
+            opacity: 0;
+            transform: scale(0.9) translateY(30px);
+            pointer-events: none;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stage.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Screen Shake Effect for the Explosion */
+        .screen-shake {
+            animation: shake 0.4s ease-out;
+        }
+        .micro-shake {
+            animation: shake 0.1s ease-out infinite;
+        }
+
+        /* Romantic cursive titles */
+        h1, .cursive {
+            font-family: 'Dancing Script', cursive;
+            color: #ff4d79;
+            text-shadow: 0 0 15px rgba(255, 77, 121, 0.5);
+        }
+
+        h1 { font-size: 3rem; margin-bottom: 15px; }
+        p { font-size: 1rem; line-height: 1.6; color: #e0e0e0; margin-bottom: 20px; }
+
+        /* Elegant Glassmorphism Buttons */
+        .btn {
+            background: linear-gradient(45deg, #ff4d79, #ff1a53);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 77, 121, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 77, 121, 0.6);
+        }
+
+        /* --- STAGE 1: THE FLOATING LETTER --- */
+        #letter-icon {
+            font-size: 90px;
+            cursor: pointer;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px rgba(255, 77, 121, 0.7));
+            animation: floatAndShake 3s ease-in-out infinite;
+            transition: transform 0.5s ease;
+        }
+        #letter-icon:hover {
+            transform: scale(1.15);
+        }
+
+        /* --- STAGE 2: MEMORY NOTEBOOK --- */
+        .card-container {
+            position: relative;
+            min-height: 200px;
+            margin: 20px 0;
+        }
+        .story-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            border-left: 5px solid #ff4d79;
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .story-card.active { display: block; }
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+        .dot.active { background: #ff4d79; }
+
+        /* --- STAGE 3: FIREWORK BOX & GRAND FINALE --- */
+        #skyshot-box {
+            font-size: 80px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 20px;
+            transition: transform 0.2s;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+        }
+        .ignition #skyshot-box {
+            animation: boxRumble 0.05s infinite;
+            filter: drop-shadow(0 0 25px #ffcc00);
+        }
+        #shell {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 15px;
+            height: 15px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ff4d79, 0 0 40px #fff;
+            display: none;
+        }
+        .takeoff {
+            display: block !important;
+            animation: shellShoot 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        #birthday-text {
+            font-size: 3.5rem;
+            font-weight: bold;
+            display: none;
+            margin-top: 20px;
+            text-shadow: 0 0 10px #fff, 0 0 20px #ff4d79, 0 0 40px #ff0055;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        /* Confetti Elements */
+        .confetti {
+            position: absolute;
+            z-index: 99;
+            pointer-events: none;
+        }
+
+        /* --- ANIMATION KEYFRAMES --- */
+        @keyframes floatAndShake {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(-3deg); }
+            75% { transform: translateY(-5px) rotate(3deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes boxRumble {
+            0% { transform: translate(-3px, 2px) rotate(-2deg); }
+            50% { transform: translate(3px, -2px) rotate(2deg); }
+            100% { transform: translate(-3px, -2px) rotate(-2deg); }
+        }
+        @keyframes shellShoot {
+            0% { bottom: 50px; opacity: 1; scale: 1; }
+            90% { opacity: 1; }
+            100% { bottom: 70vh; opacity: 0; scale: 0.2; }
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            10%, 30%, 50%, 70%, 90% { transform: translate(-5px, 4px); }
+            20%, 40%, 60%, 80% { transform: translate(6px, -4px); }
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .crackle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 101;
+            box-shadow: 0 0 10px #ffea00, 0 0 20px #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Layer Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Preloaded MP3 Audio Track -->
+    <audio id="hbd-audio" src="https://ia801308.us.archive.org/28/items/HappyBirthdayToYou_694/Happy_Birthday_To_You_-_Vocal.mp3" preload="auto" loop></audio>
+
+    <!-- PAGE 1: THE INVITATION -->
+    <div id="stage1" class="stage active">
+        <h1>Hello Beautiful...</h1>
+        <p>A magical little surprise is waiting just for you. Click the letter below to unlock your birthday gateway.</p>
+        <div id="letter-icon" onclick="goToStage2()">💌</div>
+    </div>
+
+    <!-- PAGE 2: THE MEMORY LANE FLIPBOOK -->
+    <div id="stage2" class="stage">
+        <h1 style="font-size: 2.5rem;">My Favorite Realities</h1>
+        <p>Before the grand celebration, I wanted to remind you of just a few things...</p>
+        
+        <div class="card-container">
+            <div class="story-card active" id="card0">
+                <h3 class="cursive" style="font-size: 2rem;">Your Beautiful Smile</h3>
+                <p>The way your entire face lights up when you laugh makes even the hardest days instantly turn perfect.</p>
+            </div>
+            <div class="story-card" id="card1">
+                <h3 class="cursive" style="font-size: 2rem;">Your Kind Heart</h3>
+                <p>The endless comfort, warmth, and grace you offer to everyone around you inspires me every single day.</p>
+            </div>
+            <div class="story-card" id="card2">
+                <h3 class="cursive" style="font-size: 2rem;">My Best Friend</h3>
+                <p>Out of all the memories we've forged, being by your side is my absolute favorite place to be in the world.</p>
+            </div>
+        </div>
+
+        <div class="progress-dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+
+        <button class="btn" id="story-btn" onclick="nextStoryCard()">Next Memory →</button>
+    </div>
+
+    <!-- PAGE 3: THE CELEBRATION BOX & FIREWORKS -->
+    <div id="stage3" class="stage">
+        <h1 style="font-size: 2.5rem;">The Main Event 🎉</h1>
+        <p id="instruction-text">Tap the magical box below to launch your birthday celebration skies!</p>
+        
+        <div id="shell"></div>
+        <div id="skyshot-box" onclick="igniteCelebration()">🎁</div>
+
+        <div id="birthday-text">Happy Birthday!<br><span class="cursive" style="font-size: 3rem; color: #fff;">I Love You Always</span></div>
+    </div>
+
+    <script>
+        /* --- AUDIO UNLOCK & FALLBACK SYSTEM --- */
+        let audioUnlocked = false;
+        
+        // This function tricks the browser into allowing audio by interacting with it on the very first click
+        function silentlyUnlockAudio() {
+            const hbdAudio = document.getElementById('hbd-audio');
+            if (!audioUnlocked && hbdAudio) {
+                hbdAudio.volume = 0; // Keep it silent
+                hbdAudio.play().then(() => {
+                    hbdAudio.pause();
+                    hbdAudio.currentTime = 0;
+                    hbdAudio.volume = 0.8;
+                    audioUnlocked = true;
+                }).catch(e => console.log("Unlock pending user interaction..."));
+            }
+        }
+
+        /* --- PROCEDURAL ROMANTIC AUDIO ENGINE --- */
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume(); // CRITICAL for iOS to play sound
+            }
+        }
+
+        function playChime() {
+            initAudio();
+            const now = audioCtx.currentTime;
+            const notes = [523.25, 659.25, 783.99, 1046.50]; 
+            notes.forEach((freq, index) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + (index * 0.08));
+                gain.gain.setValueAtTime(0.0, now);
+                gain.gain.linearRampToValueAtTime(0.06, now + (index * 0.08) + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + (index * 0.08) + 0.6);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + (index * 0.08));
+                osc.stop(now + (index * 0.08) + 0.6);
+            });
+        }
+
+        function playCrackleSound() {
+            initAudio();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(2200 + Math.random() * 2500, now);
+            gain.gain.setValueAtTime(0.02, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.06);
+        }
+
+        function playLaunchSound() {
+            initAudio();
+            const now = audioCtx.currentTime;
+            const bufferSize = audioCtx.sampleRate * 1.2;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(400, now);
+            filter.frequency.exponentialRampToValueAtTime(1200, now + 1.1); 
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.linearRampToValueAtTime(0.1, now + 0.8);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start(now);
+        }
+
+        function playBoomSound() {
+            initAudio();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(95, now);
+            osc.frequency.linearRampToValueAtTime(25, now + 0.5);
+            gain.gain.setValueAtTime(0.35, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.9);
+            
+            // Note: The bellHarmonics loop has been removed from here.
+        }
+
+        // FALLBACK: If the MP3 fails to load, this generated synth melody plays instead!
+        function playProceduralHappyBirthday() {
+            initAudio();
+            const now = audioCtx.currentTime;
+            const C4 = 261.63, D4 = 293.66, E4 = 329.63, F4 = 349.23, G4 = 392.00, A4 = 440.00, B4 = 493.88, C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46, G5 = 783.99;
+            
+            const melody = [
+                [G4, 0.75], [G4, 0.25], [A4, 1], [G4, 1], [C5, 1], [B4, 2],
+                [G4, 0.75], [G4, 0.25], [A4, 1], [G4, 1], [D5, 1], [C5, 2],
+                [G4, 0.75], [G4, 0.25], [G5, 1], [E5, 1], [C5, 1], [B4, 1], [A4, 1],
+                [F5, 0.75], [F5, 0.25], [E5, 1], [C5, 1], [D5, 1], [C5, 2]
+            ];
+
+            let totalTime = now + 0.2;
+            const tempo = 0.55;
+
+            melody.forEach((noteData) => {
+                const noteFreq = noteData[0];
+                const noteDuration = noteData[1] * tempo;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(noteFreq, totalTime);
+                gain.gain.setValueAtTime(0, totalTime);
+                gain.gain.linearRampToValueAtTime(0.1, totalTime + 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.001, totalTime + noteDuration - 0.02);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(totalTime);
+                osc.stop(totalTime + noteDuration);
+
+                totalTime += noteDuration;
+            });
+            // Loop the generated song forever
+            setTimeout(playProceduralHappyBirthday, (totalTime - now) * 1000);
+        }
+
+        /* --- BACKGROUND CANVAS ANIMATION --- */
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let hearts = [];
+        let finalStageActive = false;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class HeartParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.size = Math.random() * 12 + 6;
+                this.speed = Math.random() * 1.5 + 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.swing = Math.random() * 2;
+                this.swingSpeed = Math.random() * 0.02;
+                this.angle = Math.random() * Math.PI;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = "#ff4d79";
+                ctx.translate(this.x, this.y);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-this.size/2, -this.size/2, -this.size, 0, 0, this.size);
+                ctx.bezierCurveTo(this.size, 0, this.size/2, -this.size/2, 0, 0);
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.y -= this.speed;
+                this.angle += this.swingSpeed;
+                this.x += Math.sin(this.angle) * 0.5;
+                if (this.y < -20) {
+                    this.y = canvas.height + 20;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+        }
+
+        for(let i=0; i<40; i++) { hearts.push(new HeartParticle()); }
+
+        function animateBackground() {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            hearts.forEach(h => { h.update(); h.draw(); });
+            requestAnimationFrame(animateBackground);
+        }
+        animateBackground();
+
+        /* --- NAVIGATION HANDLERS --- */
+        function navigateStage(from, to) {
+            document.getElementById(`stage${from}`).classList.remove('active');
+            setTimeout(() => {
+                document.getElementById(`stage${to}`).classList.add('active');
+                if (to === 3) { activateInteractiveCursor(); }
+            }, 400);
+        }
+
+        function goToStage2() {
+            silentlyUnlockAudio(); // Attempt background audio unlock
+            playChime();
+            createBurst(window.innerWidth/2, window.innerHeight/2, '#ff4d79', 40);
+            navigateStage(1, 2);
+        }
+
+        /* --- STAGE 2: MEMORY CONTROLLER --- */
+        let currentCardIndex = 0;
+        const totalCards = 3;
+
+        function nextStoryCard() {
+            silentlyUnlockAudio(); // Attempt background audio unlock again
+            playChime();
+            document.getElementById(`card${currentCardIndex}`).classList.remove('active');
+            document.querySelectorAll('.dot')[currentCardIndex].classList.remove('active');
+            
+            currentCardIndex++;
+            
+            if(currentCardIndex < totalCards) {
+                document.getElementById(`card${currentCardIndex}`).classList.add('active');
+                document.querySelectorAll('.dot')[currentCardIndex].classList.add('active');
+                if(currentCardIndex === totalCards - 1) {
+                    document.getElementById('story-btn').innerText = "Unlock Surprise ➔";
+                }
+            } else {
+                navigateStage(2, 3);
+            }
+        }
+
+        /* --- STAGE 3: INTERACTIVE DYNAMICS --- */
+        function activateInteractiveCursor() {
+            window.addEventListener('mousemove', (e) => {
+                if (!finalStageActive) return;
+                if (Math.random() > 0.15) return;
+                createSparkTrail(e.clientX, e.clientY);
+            });
+            window.addEventListener('touchmove', (e) => {
+                if (!finalStageActive) return;
+                createSparkTrail(e.touches[0].clientX, e.touches[0].clientY);
+            });
+        }
+
+        function createSparkTrail(x, y) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            document.body.appendChild(p);
+            const size = Math.random() * 4 + 2;
+            const colors = ['#ff4d79', '#ffcc00', '#ffffff', '#ff0055'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            p.style.width = `${size}px`;
+            p.style.height = `${size}px`;
+            p.style.backgroundColor = color;
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+            p.style.boxShadow = `0 0 8px ${color}`;
+
+            p.animate([
+                { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                { transform: `translate(${(Math.random() - 0.5) * 30}px, ${(Math.random() - 0.5) * 30}px) scale(0)`, opacity: 0 }
+            ], { duration: 600, easing: 'ease-out' }).onfinish = () => p.remove();
+        }
+
+        /* --- FIRECRACKER VISUAL ENGINE --- */
+        function triggerFirecrackerFuse(x, y, durationMs) {
+            document.body.classList.add('micro-shake');
+            const interval = setInterval(() => {
+                playCrackleSound();
+                for(let i=0; i<6; i++) {
+                    const c = document.createElement('div');
+                    c.classList.add('crackle');
+                    document.body.appendChild(c);
+                    const ox = (Math.random() - 0.5) * 80;
+                    const oy = (Math.random() - 0.5) * 80;
+                    c.style.left = `${x + ox}px`;
+                    c.style.top = `${y + oy}px`;
+
+                    c.animate([
+                        { transform: 'scale(1)', opacity: 1 },
+                        { transform: `scale(${Math.random() * 3 + 1.5})`, opacity: 0 }
+                    ], { duration: 100 + Math.random() * 150, easing: 'linear' }).onfinish = () => c.remove();
+                }
+            }, 60);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                document.body.classList.remove('micro-shake');
+            }, durationMs);
+        }
+
+        /* --- STAGE 3: GRAND CELEBRATION DISPATCHER --- */
+        function igniteCelebration() {
+            initAudio(); 
+            silentlyUnlockAudio();
+
+            const stage3 = document.getElementById('stage3');
+            const box = document.getElementById('skyshot-box');
+            const shell = document.getElementById('shell');
+            const instruction = document.getElementById('instruction-text');
+            const birthdayText = document.getElementById('birthday-text');
+            
+            box.onclick = null; 
+            stage3.classList.add('ignition');
+
+            const boxRect = box.getBoundingClientRect();
+            const bx = boxRect.left + boxRect.width / 2;
+            const by = boxRect.top + boxRect.height / 2;
+
+            triggerFirecrackerFuse(bx, by, 1200);
+
+            setTimeout(() => {
+                stage3.classList.remove('ignition');
+                box.style.display = 'none';
+                instruction.style.display = 'none';
+                shell.classList.add('takeoff');
+                playLaunchSound(); 
+
+                setTimeout(() => {
+                    finalStageActive = true;
+                    const ex = window.innerWidth / 2;
+                    const ey = window.innerHeight * 0.3;
+                    
+                    document.body.classList.add('screen-shake');
+                    setTimeout(() => document.body.classList.remove('screen-shake'), 400);
+
+                    playBoomSound();
+                    createBurst(ex, ey, '#ff0055', 80);
+                    createBurst(ex, ey, '#ffcc00', 60);
+                    createBurst(ex, ey, '#00ffff', 60);
+                    createBurst(ex, ey, '#ffffff', 40);
+                    
+                    triggerFirecrackerFuse(ex, ey, 600);
+                    spawnConfettiRain();
+                    
+                    birthdayText.style.display = 'block';
+                    
+                    // PLAY THE AUDIO: Final bulletproof attempt with fallback!
+                    const hbdAudio = document.getElementById('hbd-audio');
+                    if(hbdAudio) {
+                        hbdAudio.volume = 0.8;
+                        const playPromise = hbdAudio.play();
+                        if(playPromise !== undefined) {
+                            playPromise.catch(e => {
+                                console.error("MP3 failed to play, executing fallback synth:", e);
+                                playProceduralHappyBirthday(); // Play synth if blocked
+                            });
+                        }
+                    } else {
+                        playProceduralHappyBirthday(); // Play synth if tag missing
+                    }
+                    
+                    setInterval(() => {
+                        const rx = Math.random() * window.innerWidth;
+                        const ry = Math.random() * (window.innerHeight * 0.55);
+                        
+                        if(Math.random() > 0.4) {
+                            playBoomSound();
+                            createBurst(rx, ry, ['#ff4d79','#ffcc00','#33ccff','#ff0055','#b366ff'][Math.floor(Math.random()*5)], 35);
+                        } else {
+                            triggerFirecrackerFuse(rx, ry, 400);
+                        }
+                    }, 900);
+
+                }, 1100);
+            }, 1200);
+        }
+
+        /* --- CONFETTI CASCADING ENGINE --- */
+        function spawnConfettiRain() {
+            const confettiColors = ['#ff4d79', '#ffcc00', '#33ccff', '#ff0055', '#4dff88', '#ae4dff'];
+            for (let i = 0; i < 150; i++) {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                document.body.appendChild(conf);
+
+                const w = Math.random() * 8 + 6;
+                const h = Math.random() * 12 + 6;
+                const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                
+                conf.style.width = `${w}px`;
+                conf.style.height = `${h}px`;
+                conf.style.backgroundColor = color;
+                conf.style.left = `${Math.random() * window.innerWidth}px`;
+                conf.style.top = `-${Math.random() * 50 + 20}px`;
+                conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+
+                conf.animate([
+                    { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate(${(Math.random() - 0.5) * 200}px, ${window.innerHeight + 50}px) rotate(${Math.random() * 720}deg)`, opacity: 0.3 }
+                ], { duration: 4000 + Math.random() * 3000, easing: 'cubic-bezier(.25, .46, .45, .94)' }).onfinish = () => conf.remove();
+            }
+        }
+
+        /* --- EXPLOSION PARTICLE ENGINE --- */
+        function createBurst(x, y, colorPalette, count) {
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                document.body.appendChild(p);
+
+                const size = Math.random() * 6 + 4;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 280 + 60;
+                const tx = Math.cos(angle) * speed;
+                const ty = Math.sin(angle) * speed;
+
+                p.style.width = `${size}px`;
+                p.style.height = `${size}px`;
+                p.style.backgroundColor = colorPalette;
+                p.style.left = `${x}px`;
+                p.style.top = `${y}px`;
+                p.style.boxShadow = `0 0 14px ${colorPalette}, 0 0 30px ${colorPalette}`;
+
+                p.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], { duration: 1200 + Math.random() * 1000, easing: 'cubic-bezier(0.1, 0.8, 0.25, 1)' }).onfinish = () => p.remove();
+            }
+        }
+    </script>
+</body>
+</html>
