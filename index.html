@@ -18,7 +18,7 @@ body{
 #sky{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
 .glow{position:fixed;width:45vmax;height:45vmax;border-radius:50%;background:#ff257d;filter:blur(100px);opacity:.09;pointer-events:none}
 .card{
- position:relative;z-index:5;width:min(92%,500px);min-height:390px;padding:38px 30px;
+ position:relative;z-index:5;width:min(92%,500px);min-height:440px;padding:38px 30px;
  border:1px solid rgba(255,130,180,.25);border-radius:28px;
  background:rgba(31,8,31,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
  box-shadow:0 20px 70px #000b,0 0 40px #ff347d1c;
@@ -38,7 +38,8 @@ body{
  border:0;border-radius:999px;padding:12px 25px;background:linear-gradient(135deg,#f02b79,#ad0a49);
  color:#fff;font:600 .92rem Poppins;cursor:pointer;box-shadow:0 8px 24px #df17664d;transition:.2s
 }
-.primary:hover{transform:translateY(-2px) scale(1.03)}
+.primary:hover:not(:disabled){transform:translateY(-2px) scale(1.03)}
+.primary:disabled{background:#4a2035;color:#995577;cursor:not-allowed;box-shadow:none;transform:none}
 .memory{
  width:100%;min-height:130px;padding:20px;border-radius:18px;margin:5px 0 20px;
  border:1px dashed #ff76aa66;background:#10040f99;display:flex;flex-direction:column;justify-content:center
@@ -58,8 +59,65 @@ body{
 .ribbon-h{position:absolute;top:36px;left:50%;width:100px;height:10px;transform:translateX(-50%);background:#ffd54a}
 .bow{position:absolute;top:20px;left:50%;width:45px;height:22px;transform:translateX(-50%)}.bow:before,.bow:after{content:"";position:absolute;width:25px;height:18px;border:7px solid #ffd54a;border-radius:50%}.bow:before{right:20px;transform:rotate(20deg)}.bow:after{left:20px;transform:rotate(-20deg)}
 .final-event{font:2rem "Great Vibes";color:#ff6fa9;margin-bottom:8px}
-.final-title{font-size:clamp(2.5rem,10vw,3.5rem);line-height:1.05;margin-bottom:15px;text-shadow:0 0 16px #fff,0 0 30px #ff2780,0 0 50px #ff005d}
-.final-sub{font:2rem Caveat;color:#fff}
+.final-title{font-size:clamp(2.5rem,10vw,3.5rem);line-height:1.05;margin-bottom:5px;text-shadow:0 0 16px #fff,0 0 30px #ff2780,0 0 50px #ff005d}
+.final-sub{font:1.4rem Caveat;color:#fff}
+
+/* Highly visible Forced-Choice Form Styles */
+.gift-form-container {
+  margin-top: 20px;
+  width: 100%;
+  background: rgba(231, 30, 106, 0.15);
+  border: 2px dashed #ff4d8d;
+  border-radius: 20px;
+  padding: 20px;
+  display: none;
+  animation: enter 1s ease forwards, glowattention 2s infinite;
+}
+@keyframes glowattention {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 77, 141, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(255, 77, 141, 0.6); }
+}
+.action-title {
+  font-family: Poppins, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffb0cb;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.gift-select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(27, 7, 27, 0.9);
+  border: 2px solid #ff4d8d;
+  color: #fff;
+  font-family: Poppins, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  text-align: center;
+  transition: all 0.3s;
+}
+.gift-select.unselected {
+  border-color: #ffd54a;
+  color: #ffd54a;
+  animation: slightshake 3s infinite;
+}
+@keyframes slightshake {
+  0%, 90%, 100% { transform: translateX(0); }
+  92% { transform: translateX(-4px); }
+  94% { transform: translateX(4px); }
+  96% { transform: translateX(-4px); }
+  98% { transform: translateX(4px); }
+}
+.gift-select option { background: #1b071b; color: #fff; font-weight: normal; }
+.form-status { font-size: 0.9rem; margin-top: 12px; font-weight: 600; display: none; }
+
 #bird{
  position:fixed;z-index:20;width:190px;height:150px;cursor:pointer;transition:left .65s cubic-bezier(.2,1.5,.5,1),top .65s cubic-bezier(.2,1.5,.5,1);
  filter:drop-shadow(0 10px 22px #ff3d864d)
@@ -85,7 +143,7 @@ body{
 </section>
 
 <section class="step" id="s2">
-<h2 class="script">My Favorite Person</h2>
+<h2 class="script">Special	about	you</h2>
 <p class="sub">Before the celebration, I wanted to remind you of a few little things...</p>
 <div class="memory"><h3 id="mt">Your Beautiful Smile</h3><p id="md">The way your smile lights up a moment makes ordinary days feel special.</p></div>
 <div class="dots"><i class="dot on"></i><i class="dot"></i><i class="dot"></i></div>
@@ -103,7 +161,21 @@ body{
 <section class="step" id="s4">
 <div class="final-event">The Main Event 🎉</div>
 <h1 class="final-title">Happy<br>Birthday!<br></h1>
-<div class="final-sub">Your All Dearms Come True</div>
+<div class="final-sub">May all your dreams come true</div>
+
+<!-- Highly Visible Forced-Choice Form -->
+<div id="giftFormContainer" class="gift-form-container">
+  <div class="action-title">👇 Wait! Claim Your Gift 👇</div>
+  <form id="claimForm">
+    <select name="gift" id="giftSelection" class="gift-select unselected" required>
+      <option value="" disabled selected>Tap here to select...</option>
+      <option value="Have a call">📞 Have a call</option>
+      <option value="Have a meeting">🤝 Have a GameTogether</option>
+    </select>
+    <button type="submit" class="primary" style="width: 100%; font-size: 1.05rem; padding: 14px;" id="submitBtn" disabled>Claim It Now ✨</button>
+  </form>
+  <p id="formStatus" class="form-status"></p>
+</div>
 </section>
 </main>
 
@@ -133,7 +205,6 @@ function newBird(initial=false){
 }
 
 function drawFeatherWing(c, side, flap){
- // A layered wing with separate primary feather tips.
  c.save();
  c.scale(side,1);
  c.fillStyle='#eee8ee';
@@ -145,7 +216,6 @@ function drawFeatherWing(c, side, flap){
  c.quadraticCurveTo(17,7,2,9);
  c.closePath();
  c.fill();
-
  c.fillStyle='#fff';
  const feathers=[
    [-3,0,25,-31+flap,40,-36+flap],
@@ -169,30 +239,22 @@ function drawFeatherWing(c, side, flap){
 function drawBird(b){
  b.x+=b.v;
  b.p+=b.flap;
-
  const wing=Math.sin(b.p)*25;
  const bob=Math.sin(b.p*.45)*.35;
  b.y+=bob;
-
  if(b.x<-130||b.x>W+130){
    const fresh=newBird(false);
    birds[birds.indexOf(b)]=fresh;
    return;
  }
-
  ctx.save();
  ctx.translate(b.x,b.y);
  ctx.scale(b.s*b.d,b.s);
  ctx.globalAlpha=b.o;
-
- // Soft atmospheric shadow/glow.
  ctx.shadowColor='rgba(255,220,238,.35)';
  ctx.shadowBlur=7;
-
- // Rear wing.
  drawFeatherWing(ctx,-1,wing*.65);
 
- // Tail feathers.
  ctx.shadowBlur=0;
  ctx.fillStyle='#e8e1e8';
  ctx.beginPath();
@@ -204,7 +266,6 @@ function drawBird(b){
  ctx.closePath();
  ctx.fill();
 
- // Main body — subtle shaded dove shape.
  const body=ctx.createLinearGradient(-32,-12,31,14);
  body.addColorStop(0,'#ffffff');
  body.addColorStop(.55,'#faf7fa');
@@ -220,7 +281,6 @@ function drawBird(b){
  ctx.closePath();
  ctx.fill();
 
- // Neck/head.
  const head=ctx.createRadialGradient(27,-10,2,27,-10,14);
  head.addColorStop(0,'#fff');
  head.addColorStop(1,'#ddd5df');
@@ -229,7 +289,6 @@ function drawBird(b){
  ctx.arc(28,-8,13,0,Math.PI*2);
  ctx.fill();
 
- // Beak.
  ctx.fillStyle='#c8a6a0';
  ctx.beginPath();
  ctx.moveTo(39,-9);
@@ -238,7 +297,6 @@ function drawBird(b){
  ctx.closePath();
  ctx.fill();
 
- // Eye + tiny highlight.
  ctx.fillStyle='#211521';
  ctx.beginPath();
  ctx.arc(34,-11,2.2,0,Math.PI*2);
@@ -248,15 +306,12 @@ function drawBird(b){
  ctx.arc(34.7,-11.7,.65,0,Math.PI*2);
  ctx.fill();
 
- // Breast highlight.
  ctx.fillStyle='rgba(255,255,255,.42)';
  ctx.beginPath();
  ctx.ellipse(7,3,17,7,.12,0,Math.PI*2);
  ctx.fill();
 
- // Near articulated wing with individual feather edges.
  drawFeatherWing(ctx,1,wing);
-
  ctx.restore();
 }
 
@@ -268,12 +323,10 @@ function placeBird(){bx=Math.random()*(innerWidth-210)+10;by=Math.random()*(inne
 function carrierWing(c, side, flap){
  c.save();
  c.scale(side,1);
-
  const wingGrad=c.createLinearGradient(0,-42,42,8);
  wingGrad.addColorStop(0,'#ffffff');
  wingGrad.addColorStop(.55,'#f3edf3');
  wingGrad.addColorStop(1,'#d5ccd6');
-
  c.fillStyle=wingGrad;
  c.beginPath();
  c.moveTo(0,2);
@@ -284,7 +337,6 @@ function carrierWing(c, side, flap){
  c.closePath();
  c.fill();
 
- // Primary feathers.
  const tips=[
    [2,1,28,-40+flap*.7,49,-43+flap*.7],
    [2,4,34,-33+flap*.62,55,-35+flap*.58],
@@ -309,18 +361,14 @@ function drawCarrier(){
  if(!active)return;
  bctx.clearRect(0,0,190,150);
  flap+=.12;
-
  const wing=Math.sin(flap)*22;
  const bob=Math.sin(flap*.55)*4;
  const swing=Math.sin(flap*.32)*.08;
 
  bctx.save();
  bctx.translate(91,57+bob);
-
- // Back wing.
  carrierWing(bctx,-1,wing*.72);
 
- // Tail feathers.
  bctx.fillStyle='#e9e2e9';
  bctx.beginPath();
  bctx.moveTo(-25,4);
@@ -331,7 +379,6 @@ function drawCarrier(){
  bctx.closePath();
  bctx.fill();
 
- // Body gradient.
  const body=bctx.createLinearGradient(-32,-18,34,23);
  body.addColorStop(0,'#ffffff');
  body.addColorStop(.58,'#faf6fa');
@@ -347,7 +394,6 @@ function drawCarrier(){
  bctx.closePath();
  bctx.fill();
 
- // Neck/head.
  const head=bctx.createRadialGradient(31,-16,1,31,-11,18);
  head.addColorStop(0,'#ffffff');
  head.addColorStop(.72,'#f5eff5');
@@ -357,13 +403,11 @@ function drawCarrier(){
  bctx.arc(31,-11,16,0,Math.PI*2);
  bctx.fill();
 
- // Slight facial feather patch.
  bctx.fillStyle='rgba(214,194,210,.55)';
  bctx.beginPath();
  bctx.arc(40,-5,7,0,Math.PI*2);
  bctx.fill();
 
- // Beak with two-tone detail.
  bctx.fillStyle='#c89586';
  bctx.beginPath();
  bctx.moveTo(44,-12);
@@ -378,22 +422,18 @@ function drawCarrier(){
  bctx.lineTo(57,-8);
  bctx.stroke();
 
- // Clearly visible bird eye: eyelid rim, iris, pupil and catchlight.
  bctx.fillStyle='rgba(255,246,250,.92)';
  bctx.beginPath();
  bctx.arc(38,-15,5.6,0,Math.PI*2);
  bctx.fill();
-
  bctx.fillStyle='#8c516d';
  bctx.beginPath();
  bctx.arc(38,-15,4.15,0,Math.PI*2);
  bctx.fill();
-
  bctx.fillStyle='#171018';
  bctx.beginPath();
  bctx.arc(38.25,-15,2.65,0,Math.PI*2);
  bctx.fill();
-
  bctx.fillStyle='#ffffff';
  bctx.beginPath();
  bctx.arc(39.2,-16.2,1.15,0,Math.PI*2);
@@ -405,22 +445,17 @@ function drawCarrier(){
  bctx.arc(38,-15,5.6,Math.PI*1.05,Math.PI*1.9);
  bctx.stroke();
 
- // Soft breast highlight.
  bctx.fillStyle='rgba(255,255,255,.45)';
  bctx.beginPath();
  bctx.ellipse(7,4,18,7,.1,0,Math.PI*2);
  bctx.fill();
 
- // Near wing.
  carrierWing(bctx,1,wing);
 
- // ------------------ LETTER FIRST ------------------
- // The envelope is behind the feet, so the feet visibly grip its handle.
  bctx.save();
  bctx.translate(-1,50);
  bctx.rotate(swing);
 
- // Short holding strap + small loop above the envelope.
  bctx.strokeStyle='#ff6fa8';
  bctx.lineWidth=2.5;
  bctx.beginPath();
@@ -431,7 +466,6 @@ function drawCarrier(){
  bctx.ellipse(4,-3,6,4,0,0,Math.PI*2);
  bctx.stroke();
 
- // Envelope body.
  bctx.fillStyle='#fffafd';
  bctx.strokeStyle='#220a1d';
  bctx.lineWidth=2;
@@ -440,7 +474,6 @@ function drawCarrier(){
  bctx.fill();
  bctx.stroke();
 
- // Envelope folds.
  bctx.beginPath();
  bctx.moveTo(-31,2);
  bctx.lineTo(0,25);
@@ -453,7 +486,6 @@ function drawCarrier(){
  bctx.lineTo(8,22);
  bctx.stroke();
 
- // Heart seal.
  bctx.fillStyle='#ff195e';
  bctx.beginPath();
  bctx.moveTo(0,28);
@@ -464,16 +496,9 @@ function drawCarrier(){
  bctx.fill();
  bctx.restore();
 
- // ------------------ FEET OVER THE STRAP ------------------
- // Legs emerge from the belly and the toes wrap around the strap.
  bctx.lineCap='round';
  bctx.lineJoin='round';
-
- const skin='#d58d83';
- const light='#eca49a';
- const claw='#a96a65';
-
- // Two naturally bent legs.
+ const skin='#d58d83',light='#eca49a',claw='#a96a65';
  bctx.strokeStyle=skin;
  bctx.lineWidth=2.25;
  bctx.beginPath();
@@ -485,14 +510,12 @@ function drawCarrier(){
  bctx.quadraticCurveTo(14,22,10,32);
  bctx.stroke();
 
- // Ankles.
  bctx.fillStyle=light;
  bctx.beginPath();
  bctx.arc(4,32,2.5,0,Math.PI*2);
  bctx.arc(10,32,2.5,0,Math.PI*2);
  bctx.fill();
 
- // Back foot curls behind the strap.
  bctx.strokeStyle=skin;
  bctx.lineWidth=2;
  bctx.beginPath();
@@ -507,7 +530,6 @@ function drawCarrier(){
  bctx.quadraticCurveTo(7,38,8,35);
  bctx.stroke();
 
- // Front foot curls clearly around the front of the strap.
  bctx.beginPath();
  bctx.moveTo(10,32);
  bctx.quadraticCurveTo(7,35,6,39);
@@ -520,7 +542,6 @@ function drawCarrier(){
  bctx.quadraticCurveTo(15,36,13,34);
  bctx.stroke();
 
- // Claw tips, small and curved, overlapping the strap.
  bctx.strokeStyle=claw;
  bctx.lineWidth=1.1;
  [[-1,39,2,37],[3,42,4,39],[6,41,6,38],
@@ -548,6 +569,7 @@ bird.addEventListener('click',()=>{
  if(taps<=0){show(1);document.querySelector('#hint').style.display='none'}
  else placeBird();
 });
+
 const memories=[
 ['Your Beautiful Smile','The way your smile lights up a moment makes ordinary days feel special.'],
 ['Your Kind Heart','The little things you do for people say more than words ever could.'],
@@ -559,11 +581,63 @@ document.querySelector('#next').onclick=()=>{
  if(mi<memories.length){document.querySelector('#mt').textContent=memories[mi][0];document.querySelector('#md').textContent=memories[mi][1];document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===mi));if(mi===2)document.querySelector('#next').textContent='Open The Gift 🎁'}
  else show(2)
 };
+
+// Main event trigger
 document.querySelector('#gift').onclick=()=>{
  show(3);finale=true;birds=Array.from({length:20},()=>newBird(true));
  for(let i=0;i<180;i++)setTimeout(()=>confetti(i),i*8);
+
+ // Reveal the embedded form
+ setTimeout(() => {
+   document.getElementById('giftFormContainer').style.display = 'block';
+ }, 2000);
 };
+
 function confetti(){const x=Math.random(),y=.75+Math.random()*.2;const e=document.createElement('span');e.textContent=['💖','✨','🎉','💕'][Math.floor(Math.random()*4)];e.style.cssText=`position:fixed;left:${x*100}%;top:${y*100}%;font-size:${12+Math.random()*20}px;z-index:50;pointer-events:none;transition:transform 1.5s,opacity 1.5s`;document.body.appendChild(e);requestAnimationFrame(()=>{e.style.transform=`translate(${(Math.random()-.5)*180}px,-${120+Math.random()*300}px) rotate(${Math.random()*360}deg)`;e.style.opacity=0});setTimeout(()=>e.remove(),1600)}
+
+// --- Google Sheet Submission Logic ---
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwFsTWjKCkKykT36a0gCR7J1HsoyJI69yGsdIR4lF0OC3rXWYGdcxaO_QaTsdRmFu_nHg/exec'; // Paste your URL ONLY here
+
+const claimForm = document.getElementById('claimForm');
+const giftSelection = document.getElementById('giftSelection');
+const submitBtn = document.getElementById('submitBtn');
+const formStatus = document.getElementById('formStatus');
+
+// When user taps the dropdown, unlock the submit button and stop the shaking animation
+giftSelection.addEventListener('change', () => {
+  giftSelection.classList.remove('unselected');
+  submitBtn.disabled = false;
+  submitBtn.style.animation = 'pulse 1.8s infinite';
+});
+
+claimForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if(giftSelection.value === "") return;
+  
+  submitBtn.disabled = true;
+  submitBtn.style.animation = 'none';
+  submitBtn.textContent = 'Sending...';
+  formStatus.style.display = 'block';
+  formStatus.style.color = '#fff';
+  formStatus.textContent = 'Delivering your wish... 🕊️';
+
+  // Live submission to Google Sheet with CORS bypass
+  fetch(scriptURL, { method: 'POST', body: new FormData(claimForm), mode: 'no-cors' })
+    .then(response => {
+        formStatus.textContent = '✨ Your wish has been successfully sent!';
+        formStatus.style.color = '#ffb0cb';
+        submitBtn.style.display = 'none';
+        giftSelection.disabled = true;
+        document.getElementById('giftFormContainer').style.animation = 'none'; 
+        document.getElementById('giftFormContainer').style.boxShadow = '0 0 15px rgba(255, 77, 141, 0.4)';
+    })
+    .catch(error => {
+        formStatus.textContent = '❌ Oops! Something went wrong. Try again.';
+        formStatus.style.color = '#ff6fa9';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Claim It Now ✨';
+    });
+});
 </script>
 </body>
 </html>
